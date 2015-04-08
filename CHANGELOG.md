@@ -1,4 +1,7 @@
 # Changelog
+## New
+ + take out libre office stuff 
+ + 
 
 ## 0.4.0 (2014-08-19)
  + OS: Upgraded from 12.10 to 14.04

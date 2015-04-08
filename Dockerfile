@@ -18,7 +18,9 @@
 
 
 FROM ubuntu:14.04
-MAINTAINER Roberto G. Hashioka "roberto_hashioka@hotmail.com"
+# IMAGE guruvan/desktop-base
+MAINTAINER Rob Nelson "guruvan@maza.club"
+# FROKED FROM: Roberto G. Hashioka "roberto_hashioka@hotmail.com"
 
 RUN apt-get update -y
 RUN apt-get upgrade -y
@@ -52,13 +54,13 @@ RUN apt-get -y install fuse
 
 # Installing the apps: Firefox, flash player plugin, LibreOffice and xterm
 # libreoffice-base installs libreoffice-java mentioned before
-RUN apt-get install -y libreoffice-base firefox libreoffice-gtk libreoffice-calc xterm
+RUN apt-get install -y firefox xterm
 
 # Set locale (fix the locale warnings)
 RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 
 # Copy the files into the container
-ADD . /src
+COPY . /src
 
 EXPOSE 22
 # Start xdm and ssh services.
