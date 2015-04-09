@@ -22,12 +22,17 @@ FROM ubuntu:14.04
 MAINTAINER Rob Nelson "guruvan@maza.club"
 # FROKED FROM: Roberto G. Hashioka "roberto_hashioka@hotmail.com"
 
-RUN apt-get update -y
-RUN apt-get upgrade -y
 
 # Set the env variable DEBIAN_FRONTEND to noninteractive
 ENV DEBIAN_FRONTEND noninteractive
 
+# Update to latest xpra
+RUN curl http://winswitch.org/gpg.asc | apt-key add - \
+     && echo "deb http://winswitch.org/ trusty main" > /etc/apt/sources.list.d/winswitch.list \
+     && apt-get install software-properties-common >& /dev/null \
+     && add-apt-repository universe >& /dev/null \
+     && apt-get update \
+     && apt-get upgrade -y
 # Installing the environment required: xserver, xdm, flux box, roc-filer and ssh
 RUN apt-get install -y xpra rox-filer openssh-server pwgen xserver-xephyr xdm fluxbox xvfb sudo
 
@@ -54,7 +59,15 @@ RUN apt-get -y install fuse
 
 # Installing the apps: Firefox, flash player plugin, LibreOffice and xterm
 # libreoffice-base installs libreoffice-java mentioned before
-RUN apt-get install -y firefox xterm
+RUN apt-get install -y wget firefox xterm git tmux yaquake default-jre git-flow gnupg2 pinentry-curses zsh cryptsetup pinentry-qt
+RUN curl -sSL https://get.docker.com/ubuntu | bash
+RUN wget https://files.dyne.org/tomb/Tomb-2.0.1.tar.gz
+RUN wget https://files.dyne.org/tomb/Tomb-2.0.1.tar.gz.sha
+RUN sha1sum -c Tomb-2.0.1.tar.gz.sha \
+     && tar -xpzvf Tomb-2.0.1.tar.gz \
+     && cd Tomb-2.0.1 \
+     && make install
+
 
 # Set locale (fix the locale warnings)
 RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
