@@ -29,9 +29,9 @@ ENV DEBIAN_FRONTEND noninteractive
 # Update to latest xpra
 RUN curl http://winswitch.org/gpg.asc | apt-key add - \
      && echo "deb http://winswitch.org/ trusty main" > /etc/apt/sources.list.d/winswitch.list \
-     && apt-get install software-properties-common >& /dev/null \
-     && add-apt-repository universe >& /dev/null \
-     && apt-get update \
+     && apt-get install -y software-properties-common >& /dev/null \
+     && add-apt-repository -y universe >& /dev/null \
+     && apt-get update -y \
      && apt-get upgrade -y
 # Installing the environment required: xserver, xdm, flux box, roc-filer and ssh
 RUN apt-get install -y xpra rox-filer openssh-server pwgen xserver-xephyr xdm fluxbox xvfb sudo
