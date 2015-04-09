@@ -67,7 +67,7 @@ RUN curl -sSL https://get.docker.com/ubuntu | bash
 # get & check tomb
 RUN wget https://files.dyne.org/tomb/Tomb-2.0.1.tar.gz
 RUN wget https://files.dyne.org/tomb/Tomb-2.0.1.tar.gz.sha
-RUN sha1sum -c Tomb-2.0.1.tar.gz.sha \
+RUN sha256sum -c Tomb-2.0.1.tar.gz.sha \
      && tar -xpzvf Tomb-2.0.1.tar.gz \
      && cd Tomb-2.0.1 \
      && make install
