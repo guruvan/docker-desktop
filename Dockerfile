@@ -61,7 +61,7 @@ RUN apt-get -y install fuse
 
 # Installing the apps: Firefox, flash player plugin, LibreOffice and xterm
 # libreoffice-base installs libreoffice-java mentioned before
-RUN apt-get install -y  firefox xterm yaquake default-jre pinentry-qt
+RUN apt-get install -y  firefox xterm yakuake default-jre pinentry-qt
 # Get docker so we have the docker binary and all deps inside the container
 RUN curl -sSL https://get.docker.com/ubuntu | bash
 # get & check tomb
