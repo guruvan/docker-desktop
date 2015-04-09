@@ -27,6 +27,7 @@ MAINTAINER Rob Nelson "guruvan@maza.club"
 ENV DEBIAN_FRONTEND noninteractive
 
 # Update to latest xpra
+RUN apt-get install -y wget git tmux git-flow gnupg2 pinentry-curses zsh cryptsetup  curl
 RUN curl http://winswitch.org/gpg.asc | apt-key add - \
      && echo "deb http://winswitch.org/ trusty main" > /etc/apt/sources.list.d/winswitch.list \
      && apt-get install -y software-properties-common >& /dev/null \
@@ -59,8 +60,10 @@ RUN apt-get -y install fuse
 
 # Installing the apps: Firefox, flash player plugin, LibreOffice and xterm
 # libreoffice-base installs libreoffice-java mentioned before
-RUN apt-get install -y wget firefox xterm git tmux yaquake default-jre git-flow gnupg2 pinentry-curses zsh cryptsetup pinentry-qt
+RUN apt-get install -y  firefox xterm yaquake default-jre pinentry-qt
+# Get docker so we have the docker binary and all deps inside the container
 RUN curl -sSL https://get.docker.com/ubuntu | bash
+# get & check tomb
 RUN wget https://files.dyne.org/tomb/Tomb-2.0.1.tar.gz
 RUN wget https://files.dyne.org/tomb/Tomb-2.0.1.tar.gz.sha
 RUN sha1sum -c Tomb-2.0.1.tar.gz.sha \
