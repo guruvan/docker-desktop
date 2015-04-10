@@ -61,7 +61,10 @@ if [ $PROCESS_NUM -eq 0 ] || [ $FLAG  ]; then
         # Start xpra session
 	DISPLAY_1=$(( $DISPLAY + 1 ))
 
-	xpra start :$DISPLAY & sleep 5; xpra stop :$DISPLAY & sleep 5; xpra start :$DISPLAY --start-child="Xephyr -ac -screen $SCREEN_SIZE -query localhost -host-cursor -reset -terminate :$DISPLAY_1" --xvfb="Xvfb +extension Composite -screen 0 ${SCREEN_SIZE}x24+32 -nolisten tcp -noreset -auth /home/docker/.Xauthority" & sleep 5 ; DISPLAY=:$DISPLAY_1 fluxbox & DISPLAY=:$DISPLAY_1 rox --pinboard=Default &
+	xpra start :$DISPLAY --no-pulseaudio --no-notifications --no-microphone --start-child="mrxvt" --no-system-tray --xvfb="Xvfb +extension Composite -screen 0 ${SCREEN_SIZE}x24+32 -nolisten tcp -noreset -auth /home/docker/.Xauthority" --no-mdns; sleep 5 ; xpad &
+	#& sleep 5; xpra stop :$DISPLAY & sleep 5; 
+	
+	#xpra start :$DISPLAY --start-child="Xephyr -ac -screen $SCREEN_SIZE -query localhost -host-cursor -reset -terminate :$DISPLAY_1" 
 	echo -e "\n----------------"
 	echo -e "Session started!"
 	echo -e "----------------\n"

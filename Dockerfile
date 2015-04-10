@@ -61,9 +61,28 @@ RUN apt-get -y install fuse
 
 # Installing the apps: Firefox, flash player plugin, LibreOffice and xterm
 # libreoffice-base installs libreoffice-java mentioned before
-RUN apt-get install -y  firefox xterm yakuake default-jre pinentry-qt
+RUN add-apt-repository ppa:nesthib/weechat-stable
+RUN apt-get install -y  weechat firefox xterm mrxvt kvirc default-jre pinentry-qt chromium-browser deluge wine bluefish meld diffuse
+
+
 # Get docker so we have the docker binary and all deps inside the container
 RUN curl -sSL https://get.docker.com/ubuntu | bash
+# liclipse 
+RUN wget https://googledrive.com/host/0BwwQN8QrgsRpLVlDeHRNemw3S1E/LiClipse%201.4.0/liclipse_1.4.0_linux.gtk.x86_64.tar.gz
+RUN if [ "$(md5sum liclipse_1.4.0_linux.gtk.x86_64.tar.gz|awk '{print $1}')" = "ce65311d12648a443f557f95b8e0fd59" ]; \
+       then tar -xpzvf liclipse_1.4.0_linux.gtk.x86_64.tar.gz  \
+       fi \
+
+# UpdateSite: wget https://googledrive.com/host/0BwwQN8QrgsRpLVlDeHRNemw3S1E
+# addon to eclipse
+
+# smartgit
+RUN wget http://www.syntevo.com/smartgit/download?file=smartgit/smartgit-6_5_7.deb
+RUN if [ "$(md5sum smartgit-6_5_7.deb)|awk '{print $1}'" = "4a5449fee499d5e23edc21ceb24b9bef" ]; \
+     then dpkg -i smartgit-6_5_7.deb \
+     fi \
+     && apt-get install -f 
+
 # get & check tomb
 RUN wget https://files.dyne.org/tomb/Tomb-2.0.1.tar.gz
 RUN wget https://files.dyne.org/tomb/Tomb-2.0.1.tar.gz.sha
@@ -79,6 +98,6 @@ RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 # Copy the files into the container
 COPY . /src
 
-EXPOSE 22
+EXPOSE 22 9000 
 # Start xdm and ssh services.
 CMD ["/bin/bash", "/src/startup.sh"]
