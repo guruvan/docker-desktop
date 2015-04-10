@@ -28,15 +28,16 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Update to latest xpra
 RUN apt-get update -y \
-     && apt-get install -y wget git tmux git-flow gnupg2 pinentry-curses zsh cryptsetup  curl
+     && apt-get install -y software-properties-common wget git tmux git-flow gnupg2 pinentry-curses zsh cryptsetup  curl
 RUN curl http://winswitch.org/gpg.asc | apt-key add - 
+RUN add-apt-repository ppa:nesthib/weechat-stable
 RUN echo "deb http://winswitch.org/ trusty main" > /etc/apt/sources.list.d/winswitch.list \
      && apt-get install -y software-properties-common \
      && add-apt-repository -y universe \
      && apt-get update -y \
-     && apt-get upgrade -y
+     && apt-get upgrade -y \
+     && apt-get install -y  weechat firefox xterm mrxvt default-jre pinentry-qt chromium-browser deluge bluefish meld diffuse xpra openssh-server pwgen apg  xdm xvfb sudo
 # Installing the environment required: xserver, xdm, flux box, roc-filer and ssh
-RUN apt-get install -y xpra rox-filer openssh-server pwgen xserver-xephyr xdm fluxbox xvfb sudo
 
 # Configuring xdm to allow connections from any IP address and ssh to allow X11 Forwarding. 
 RUN sed -i 's/DisplayManager.requestPort/!DisplayManager.requestPort/g' /etc/X11/xdm/xdm-config
@@ -61,26 +62,19 @@ RUN apt-get -y install fuse
 
 # Installing the apps: Firefox, flash player plugin, LibreOffice and xterm
 # libreoffice-base installs libreoffice-java mentioned before
-RUN add-apt-repository ppa:nesthib/weechat-stable
-RUN apt-get install -y  weechat firefox xterm mrxvt kvirc default-jre pinentry-qt chromium-browser deluge wine bluefish meld diffuse
-
 
 # Get docker so we have the docker binary and all deps inside the container
 RUN curl -sSL https://get.docker.com/ubuntu | bash
 # liclipse 
 RUN wget https://googledrive.com/host/0BwwQN8QrgsRpLVlDeHRNemw3S1E/LiClipse%201.4.0/liclipse_1.4.0_linux.gtk.x86_64.tar.gz
-RUN if [ "$(md5sum liclipse_1.4.0_linux.gtk.x86_64.tar.gz|awk '{print $1}')" = "ce65311d12648a443f557f95b8e0fd59" ]; \
-       then tar -xpzvf liclipse_1.4.0_linux.gtk.x86_64.tar.gz  \
-       fi \
+RUN if [ "$(md5sum liclipse_1.4.0_linux.gtk.x86_64.tar.gz|awk '{print $1}')" = "ce65311d12648a443f557f95b8e0fd59" ]; then tar -xpzvf liclipse_1.4.0_linux.gtk.x86_64.tar.gz; fi 
 
 # UpdateSite: wget https://googledrive.com/host/0BwwQN8QrgsRpLVlDeHRNemw3S1E
 # addon to eclipse
 
 # smartgit
 RUN wget http://www.syntevo.com/smartgit/download?file=smartgit/smartgit-6_5_7.deb
-RUN if [ "$(md5sum smartgit-6_5_7.deb)|awk '{print $1}'" = "4a5449fee499d5e23edc21ceb24b9bef" ]; \
-     then dpkg -i smartgit-6_5_7.deb \
-     fi \
+RUN if [ "$(md5sum smartgit-6_5_7.deb)|awk '{print $1}'" = "4a5449fee499d5e23edc21ceb24b9bef" ]; then dpkg -i smartgit-6_5_7.deb; fi \
      && apt-get install -f 
 
 # get & check tomb
@@ -91,6 +85,11 @@ RUN sha256sum -c Tomb-2.0.1.tar.gz.sha \
      && cd Tomb-2.0.1 \
      && make install
 
+RUN add-apt-repository -y ppa:ubuntu-wine/ppa \
+     && dpkg --add-architecture i386 \
+     && apt-get update -y \
+     && apt-get upgrade -y \
+     && apt-get install -y  wine1.7 winbind winetricks  
 
 # Set locale (fix the locale warnings)
 RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
