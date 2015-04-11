@@ -45,7 +45,7 @@ RUN echo "deb http://winswitch.org/ trusty main" > /etc/apt/sources.list.d/winsw
 	 python-pip php5 imagemagick php5-cli php5-redis \
 	 default-jre default-jdk sshfs ssh-askpass chromium-browser deluge \
 	 bluefish meld diffuse xpra openssh-server pwgen apg \
-	 xdm xvfb sudo pinentry-gtk2 pinentry-curses bitlbee bitlbee-plugin-otr \
+	 xdm  Xorg xserver-xorg-video-dummy xvfb sudo pinentry-gtk2 pinentry-curses bitlbee bitlbee-plugin-otr \
 	 xpad weechat-scripts keychain bash-completion python-optcomplete \
 	 git-all github-backup grive vim-gtk vim-python-jedi
 # Installing the environment required: xserver, xdm, flux box, roc-filer and ssh
@@ -83,10 +83,10 @@ RUN curl -sSL https://get.docker.com/ubuntu | bash
 # addon to eclipse
 
 # smartgit
-RUN wget http://www.syntevo.com/downloads/smartgit/smartgit-6_5_7.deb
-RUN if [ "$(md5sum smartgit-6_5_7.deb)|awk '{print $1}'" = "4a5449fee499d5e23edc21ceb24b9bef" ]; then dpkg -i smartgit-6_5_7.deb; fi \
-     && apt-get install -f \
-     && mv /smartgit* /opt
+#RUN wget http://www.syntevo.com/downloads/smartgit/smartgit-6_5_7.deb
+RUN wget http://www.syntevo.com/downloads/smartgit/smartgit-generic-6_5_7.tar.gz
+
+RUN if [ "$(md5sum smartgit-generic-6_5_7.tar.gz)|awk '{print $1}'" = "02b7216dd643d929049a2382905a24f7" ]; then mv smartgit-generic-6_5_7.tar.gz /opt && cd /opt && tar -xpzvf smartgit-generic-6_5_7.tar.gz ; fi && ln -s /opt/smartgit/bin/smartgit.sh /usr/local/bin/smartgit
 
 
 # get & check tomb
@@ -113,7 +113,7 @@ RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 
 # Copy the files into the container
 COPY . /src
-
+COPY etc/xpra.conf /etc/xpra.conf
 EXPOSE 22 9000 
 # Start xdm and ssh services.
 CMD ["/bin/bash", "/src/startup.sh"]
