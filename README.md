@@ -1,56 +1,76 @@
 DOCKER-DESKTOP
 ==============
 
+##Quick Start
+
+ This example uses TCP connection which is avilable in ./docker-desktop by default, for use over VPN
+  - see below for commandline ssh connection
+
+ On application server
+   ```
+   docker pull guruvan/desktop-base
+   docker run -d --name username_desktop -p 1337:22 -p 9001:9000  guruvan/desktop-base
+   docker-enter username_desktop
+   su - docker
+   echo "your_sekrit_passwd" > ~/.xprapass
+   ./docker-desktop -d 10
+   ```
+ On local display server, use Xpra Launcher app to connect to port 9000 of that host
+ with the password you set above
+
+
 ##Description
 
 This Dockerfile creates a docker image and once it's executed it creates a container that runs X11 and SSH services.
 The ssh is used to forward X11 and provide you encrypted data communication between the docker container and your local machine.
 
-Xpra + Xephyr allows to display the applications running inside of the container such as Firefox, LibreOffice, xterm, etc. with recovery connection capabilities. Xpra also uses a custom protocol that is self-tuning and relatively latency-insensitive, and thus is usable over worse links than standard X.
+Xpra allows to display the applications running inside of the container such as Firefox, eclipse, smartgit, xterm, etc. with recovery connection capabilities. Xpra also uses a custom protocol that is self-tuning and relatively latency-insensitive, and thus is usable over worse links than standard X.
 
-The applications can be rootless, so the client machine manages the windows that are displayed.
+The applications are served rootless, so the client machine manages the windows that are displayed.
 
-Fluxbox and ROX-Filer creates a very minimalist way to manages the windows and files. 
+This is a large kitchen-sink image intended to support developers working on cloud infrastructure
+ approx. 3.5GB
+
+We include an ssh server to allow xpra connection setup over ssh
+Default is to setup connections over TCP to enhance OSX connections via VPN
+  - most VPN clients appear to break xpra setup over ssh, but with encryption on VPN, this is ok
+
+## Applications:
+ * Text
+   - build tools: make cmake, automake, etc - git, git-flow toolchain
+   - weechat
+   - Tomb
+   - grive
+   - bitlbee
+   - 
+ * GUI 
+   - gvim
+   - firefox
+   - chromium
+   - eclipse (4.3)
+   - bluefish
+   - meld
+   - diffuse
+   - smartgit
+   - nautilus (for smartgit integration) 
+   - pidgin (for alternative to weechat
+   - mrxvt
+   - seahorse
+   - wine1.7
 
 
-![Docker L](image/docker-desktop.png "Docker-Desktop")
 
-OBS: The client machine needs to have a X11 server installed (Xpra). See the "Notes" below. 
-
-##Docker Installation
-
-###On Ubuntu:
-Docker is available as a Ubuntu PPA (Personal Package Archive), hosted on launchpad which makes installing Docker on Ubuntu very easy.
-
-```
-#Add the PPA sources to your apt sources list.
-sudo apt-get install python-software-properties && sudo add-apt-repository ppa:dotcloud/lxc-docker
- 
-# Update your sources
-sudo apt-get update
- 
-# Install, you will see another warning that the package cannot be authenticated. Confirm install.
-sudo apt-get install lxc-docker
-```
-###On Windows:
-Requirements:
-- Installation Tutorial (http://docs.docker.io/en/latest/installation/windows/)
-
-###On Mac OS X:
-Requirements:
-- Installation Tutorial (http://docs.docker.io/en/latest/installation/vagrant/)
-
-##Installation
+The client machine needs to have a X11 server installed (Xpra). See the "Notes" below. 
 
 
 ###Building the docker image
 
 ```
-$ docker build -t [username]/docker-desktop git://github.com/rogaha/docker-desktop.git
+$ docker build -t [username]/docker-desktop git://github.com/guruvan/docker-desktop.git
 
 OR
 
-$ git clone https://github.com/rogaha/docker-desktop.git
+$ git clone https://github.com/guruvan/docker-desktop.git
 $ cd docker-desktop
 $ docker build -t [username]/docker-desktop .
 ```
@@ -58,11 +78,17 @@ $ docker build -t [username]/docker-desktop .
 ###Running the docker image created (-d: detached mode, -P: expose the port 22 on the host machine)
 
 ```
-$ CONTAINER_ID=$(docker run -d -P [username]/docker-desktop)
+$ docker run --name username_desktop -d -P [username]/docker-desktop
 ```
+OR
+```
+$ docker run --name username_desktop -d -p 9999:22 -p 9001:9000 guruvan/desktop-base
+```
+The TCP port is bound after starting the container, so must be mapped explicitly on the commandline to start the container - if you're only using SSH for connections (generally recommended) then you may omit the port 9000 map, and/or use the "-P" to map all ports to the next available in Docker's port group. 
 
 ###Getting the password generated during runtime
 
+**If using in production, it is wise to change this!!**
 ```
 $ echo $(docker logs $CONTAINER_ID | sed -n 1p)
 User: docker Password: xxxxxxxxxxxx
@@ -74,11 +100,24 @@ User: docker Password: xxxxxxxxxxxx
 ###Getting the container's external ssh port 
 
 ```
-$ docker port $CONTAINER_ID 22
+$ docker port username_desktop  22
 49153 # This is the external port that forwards to the ssh service running inside of the container as port 22
 ```
 
 ###Connecting to the container 
+
+If you have access, docker-enter is the simplest way to access your container, or you may use the included ssh server
+ - Wise users will change the password and install a private SSH key into /home/docker/.ssh/authorized_keys
+
+Install docker-enter:
+```
+docker run -it --rm -v /usr/local/bin:/target jpetazzo/nsenter 
+```
+Then enter the container
+```
+docker-enter username_desktop
+```
+
 
 ####Starting the a new session 
 

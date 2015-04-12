@@ -7,13 +7,8 @@
 # container such as Firefox, LibreOffice, xterm, etc. 
 # with disconnection and reconnection capabilities
 #
-# Xephyr allows to display the programs running inside of the
-# container such as Firefox, LibreOffice, xterm, etc. 
-#
-# Fluxbox and ROX-Filer creates a very minimalist way to 
-# manages the windows and files.
-#
-# Author: Roberto Gandolfo Hashioka
+# Author: Rob Nelson guruvan@maza.club
+# Based on work by: Roberto Gandolfo Hashioka
 # Date: 07/28/2013
 
 
@@ -30,7 +25,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update -y \
      && apt-get install -y software-properties-common wget \
          build-essential cmake make automake git tmux \
-	 git-flow gnupg2 zsh cryptsetup  curl
+	 git-flow gnupg2 zsh cryptsetup  curl gettext
 
 RUN apt-get install -y bitlbee bitlbee-plugin-otr sudo \
 	 github-backup grive vim-python-jedi 
