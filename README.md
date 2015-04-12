@@ -1,6 +1,23 @@
 DOCKER-DESKTOP
 ==============
 
+This project provides
+ * Text workstation base for developers
+ * GUI Workstation based on Text workstation
+
+##Availability
+ * Automated Builds on Dockerhub:
+   - [guruvan/desktop-base](https://registry.hub.docker.com/u/guruvan/desktop-base)
+   - [guruvan/desktop-gui](https://registry.hub.docker.com/u/guruvan/desktop-gui)
+
+Default Dockerfile builds desktop-base (text) 
+   ```
+   git clone https://github.com/guruvan/docker-desktop
+   cd docker-desktop
+   docker build -f Dockerfile -t username/desktop-base \
+     && docker build -f Dockerfile.gui -t username/desktop-gui
+   ```
+
 ##Quick Start
 
  This example uses TCP connection which is avilable in ./docker-desktop by default, for use over VPN
@@ -8,7 +25,7 @@ DOCKER-DESKTOP
 
  On application server
    ```
-   docker pull guruvan/desktop-base
+   docker pull guruvan/desktop-gui
    docker run -d --name username_desktop -p 1337:22 -p 9001:9000  guruvan/desktop-base
    docker-enter username_desktop
    su - docker

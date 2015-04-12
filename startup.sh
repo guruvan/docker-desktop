@@ -19,7 +19,10 @@ chsh -s /bin/bash docker
 cd /src/config/ && sudo -u docker cp -R .[a-z]* [a-z]* /home/docker/
 
 # restarts the xdm service
-/etc/init.d/xdm restart
+if [ -f /home/docker/docker-desktop ]
+then
+   /etc/init.d/xdm restart
+fi
 
 # Start the ssh service
 /usr/sbin/sshd -D
