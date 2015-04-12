@@ -26,34 +26,54 @@ MAINTAINER Rob Nelson "guruvan@maza.club"
 # Set the env variable DEBIAN_FRONTEND to noninteractive
 ENV DEBIAN_FRONTEND noninteractive
 
-# Update to latest xpra
+# Nice Base
 RUN apt-get update -y \
      && apt-get install -y software-properties-common wget \
          build-essential cmake make automake git tmux \
 	 git-flow gnupg2 zsh cryptsetup  curl
+
+# Xpra updated PPA
 RUN curl http://winswitch.org/gpg.asc | apt-key add - 
+
+# Updated Weechat PPS
 RUN add-apt-repository ppa:nesthib/weechat-stable
+
 RUN echo "deb http://winswitch.org/ trusty main" > /etc/apt/sources.list.d/winswitch.list \
      && apt-get install -y software-properties-common \
      && add-apt-repository -y universe \
      && apt-get update -y \
-     && apt-get upgrade -y \
-     && apt-get install -y  weechat firefox xterm mrxvt \
-         xfe xfe-themes pidgin pidgin-otr pidgin-hotkeys \
+     && apt-get upgrade -y 
+
+RUN apt-get install -y  weechat weechat-scripts \
+         pinentry-curses keychain bash-completion python-optcomplete \
+	 sshfs ssh-askpass openssh-server pwgen apg 
+
+RUN apt-get install -y python-pip python-dev python-qt4 pyqt4-dev-tools 
+
+RUN apt-get install -y php5-cli php5-redis 
+
+RUN apt-get install -y bitlbee bitlbee-plugin-otr sudo \
+	 github-backup grive vim-python-jedi 
+
+RUN apt-get install -y xdm  Xorg xserver-xorg-video-dummy 
+
+RUN apt-get install -y imagemagick git-all default-jre default-jdk 
+
+RUN apt-get install -y firefox xterm mrxvt \
+         xfe xfe-themes deluge \
+	 bluefish meld diffuse xpra 
+	 pinentry-gtk2 xpad vim-gtk \
+
+RUN apt-get install -y pidgin pidgin-otr pidgin-hotkeys \
 	 pidgin-guifications pidgin-twitter pidgin-themes \
-	 pidgin-openpgp python-dev python-qt4 pyqt4-dev-tools \
-	 python-pip php5 imagemagick php5-cli php5-redis \
-	 default-jre default-jdk sshfs ssh-askpass chromium-browser deluge \
-	 bluefish meld diffuse xpra openssh-server pwgen apg \
-	 xdm  Xorg xserver-xorg-video-dummy xvfb sudo pinentry-gtk2 pinentry-curses bitlbee bitlbee-plugin-otr \
-	 xpad weechat-scripts keychain bash-completion python-optcomplete \
-	 git-all github-backup grive vim-gtk vim-python-jedi
+	 pidgin-openpgp 
+RUN apt-get install -y chromium-browser 
 # Installing the environment required: xserver, xdm, flux box, roc-filer and ssh
 
 # Configuring xdm to allow connections from any IP address and ssh to allow X11 Forwarding. 
 RUN sed -i 's/DisplayManager.requestPort/!DisplayManager.requestPort/g' /etc/X11/xdm/xdm-config
 RUN sed -i '/#any host/c\*' /etc/X11/xdm/Xaccess
-RUN ln -s /usr/bin/Xorg /usr/bin/X
+#RUN ln -s /usr/bin/Xorg /usr/bin/X
 RUN echo X11Forwarding yes >> /etc/ssh/ssh_config
 
 # Fix PAM login issue with sshd
