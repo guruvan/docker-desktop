@@ -51,7 +51,7 @@ RUN apt-get install -y  weechat weechat-scripts \
          pinentry-curses keychain bash-completion python-optcomplete \
 	 sshfs ssh-askpass openssh-server pwgen apg 
 
-RUN apt-get install -y python-pip python-dev-all python-dev  python-qt4 pyqt4-dev-tools 
+RUN apt-get install -y python-pip python-dev  python-qt4 pyqt4-dev-tools 
 
 RUN apt-get install -y php5-cli php5-redis 
 # Fix PAM login issue with sshd
