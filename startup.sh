@@ -4,6 +4,7 @@
 mkdir /var/run/sshd 
 
 # Add docker user and generate a random password with 12 characters that includes at least one capital letter and number.
+# Note, this is ok for testing the image out, but not recommended in production
 DOCKER_PASSWORD=`pwgen -c -n -1 12`
 echo User: docker Password: $DOCKER_PASSWORD
 DOCKER_ENCRYPYTED_PASSWORD=`perl -e 'print crypt('"$DOCKER_PASSWORD"', "aa"),"\n"'`

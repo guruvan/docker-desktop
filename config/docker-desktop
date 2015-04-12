@@ -61,9 +61,14 @@ if [ $PROCESS_NUM -eq 0 ] || [ $FLAG  ]; then
         # Start xpra session
 	DISPLAY_1=$(( $DISPLAY + 1 ))
 
+        # ssh accessible ROOTLESS 
+	#xpra start :$DISPLAY --no-pulseaudio --start-child="mrxvt" --no-mdns ; sleep 5 ; DISPLAY=:${DISPLAY} xpad &
+	# ssh may have issues (on OSX?) with VPN configurations, and SSH is not necessary over the encrypted tunnel
+	# make sure to set a pass in ~/.xprapass
 	xpra start :$DISPLAY --no-pulseaudio --start-child="mrxvt" --no-mdns --bind-tcp=0.0.0.0:9099 --password-file=/home/docker/.xprapass ; sleep 5 ; DISPLAY=:${DISPLAY} xpad &
-	#& sleep 5; xpra stop :$DISPLAY & sleep 5; 
 	
+	# make ssh accessible ROOTED desktop 
+	#xpra start :${DISPLAY} & sleep 5; xpra stop :$DISPLAY & sleep 5; 
 	#xpra start :$DISPLAY --start-child="Xephyr -ac -screen $SCREEN_SIZE -query localhost -host-cursor -reset -terminate :$DISPLAY_1" 
 	echo -e "\n----------------"
 	echo -e "Session started!"

@@ -32,6 +32,9 @@ RUN apt-get update -y \
          build-essential cmake make automake git tmux \
 	 git-flow gnupg2 zsh cryptsetup  curl
 
+RUN apt-get install -y bitlbee bitlbee-plugin-otr sudo \
+	 github-backup grive vim-python-jedi 
+
 # Xpra updated PPA
 RUN curl http://winswitch.org/gpg.asc | apt-key add - 
 
@@ -48,34 +51,9 @@ RUN apt-get install -y  weechat weechat-scripts \
          pinentry-curses keychain bash-completion python-optcomplete \
 	 sshfs ssh-askpass openssh-server pwgen apg 
 
-RUN apt-get install -y python-pip python-dev python-qt4 pyqt4-dev-tools 
+RUN apt-get install -y python-pip python-dev-all python-dev  python-qt4 pyqt4-dev-tools 
 
 RUN apt-get install -y php5-cli php5-redis 
-
-RUN apt-get install -y bitlbee bitlbee-plugin-otr sudo \
-	 github-backup grive vim-python-jedi 
-
-RUN apt-get install -y xdm  Xorg xserver-xorg-video-dummy 
-
-RUN apt-get install -y imagemagick git-all default-jre default-jdk 
-
-RUN apt-get install -y firefox xterm mrxvt \
-         xfe xfe-themes deluge \
-	 bluefish meld diffuse xpra 
-	 pinentry-gtk2 xpad vim-gtk \
-
-RUN apt-get install -y pidgin pidgin-otr pidgin-hotkeys \
-	 pidgin-guifications pidgin-twitter pidgin-themes \
-	 pidgin-openpgp 
-RUN apt-get install -y chromium-browser 
-# Installing the environment required: xserver, xdm, flux box, roc-filer and ssh
-
-# Configuring xdm to allow connections from any IP address and ssh to allow X11 Forwarding. 
-RUN sed -i 's/DisplayManager.requestPort/!DisplayManager.requestPort/g' /etc/X11/xdm/xdm-config
-RUN sed -i '/#any host/c\*' /etc/X11/xdm/Xaccess
-#RUN ln -s /usr/bin/Xorg /usr/bin/X
-RUN echo X11Forwarding yes >> /etc/ssh/ssh_config
-
 # Fix PAM login issue with sshd
 RUN sed -i 's/session    required     pam_loginuid.so/#session    required     pam_loginuid.so/g' /etc/pam.d/sshd
 
@@ -90,12 +68,46 @@ RUN dpkg-divert --local --rename --add /sbin/initctl && ln -sf /bin/true /sbin/i
 RUN apt-get -y install fuse  || :
 RUN rm -rf /var/lib/dpkg/info/fuse.postinst
 RUN apt-get -y install fuse
+# Get docker so we have the docker binary and all deps inside the container
+RUN curl -sSL https://get.docker.com/ubuntu | bash
+# get & check tomb
+RUN wget https://files.dyne.org/tomb/Tomb-2.0.1.tar.gz
+RUN wget https://files.dyne.org/tomb/Tomb-2.0.1.tar.gz.sha
+RUN sha256sum -c Tomb-2.0.1.tar.gz.sha \
+     && tar -xpzvf Tomb-2.0.1.tar.gz \
+     && cd Tomb-2.0.1 \
+     && make install \
+     && mv /Tomb-2.0.1* /opt
+
+
+##########################################
+# Really we should break this dockerfile here, and have the above be 
+# desktop-base and then make the below desktop-gui
+RUN apt-get install -y xdm  Xorg xserver-xorg-video-dummy 
+
+RUN apt-get install -y imagemagick git-all default-jre default-jdk 
+
+RUN apt-get install -y firefox xterm mrxvt \
+         nautilus nautilus-pastebin nautilus-compare nautilus-actions \
+	 searhorse-nautilus seahorse deluge \
+	 bluefish meld diffuse xpra \
+	 pinentry-gtk2 xpad vim-gtk
+
+RUN apt-get install -y pidgin pidgin-otr pidgin-hotkeys \
+	 pidgin-guifications pidgin-twitter pidgin-themes \
+	 pidgin-openpgp 
+
+RUN apt-get install -y chromium-browser 
+
+# Configuring xdm to allow connections from any IP address and ssh to allow X11 Forwarding. 
+RUN sed -i 's/DisplayManager.requestPort/!DisplayManager.requestPort/g' /etc/X11/xdm/xdm-config
+RUN sed -i '/#any host/c\*' /etc/X11/xdm/Xaccess
+#RUN ln -s /usr/bin/Xorg /usr/bin/X
+RUN echo X11Forwarding yes >> /etc/ssh/ssh_config
 
 # Installing the apps: Firefox, flash player plugin, LibreOffice and xterm
 # libreoffice-base installs libreoffice-java mentioned before
 
-# Get docker so we have the docker binary and all deps inside the container
-RUN curl -sSL https://get.docker.com/ubuntu | bash
 # liclipse 
 #RUN wget https://googledrive.com/host/0BwwQN8QrgsRpLVlDeHRNemw3S1E/LiClipse%201.4.0/liclipse_1.4.0_linux.gtk.x86_64.tar.gz
 #RUN if [ "$(md5sum liclipse_1.4.0_linux.gtk.x86_64.tar.gz|awk '{print $1}')" = "ce65311d12648a443f557f95b8e0fd59" ]; then tar -xpzvf liclipse_1.4.0_linux.gtk.x86_64.tar.gz; fi 
@@ -106,19 +118,13 @@ RUN curl -sSL https://get.docker.com/ubuntu | bash
 #RUN wget http://www.syntevo.com/downloads/smartgit/smartgit-6_5_7.deb
 RUN wget http://www.syntevo.com/downloads/smartgit/smartgit-generic-6_5_7.tar.gz
 
-RUN if [ "$(md5sum smartgit-generic-6_5_7.tar.gz)|awk '{print $1}'" = "02b7216dd643d929049a2382905a24f7" ]; then mv smartgit-generic-6_5_7.tar.gz /opt && cd /opt && tar -xpzvf smartgit-generic-6_5_7.tar.gz ; fi && ln -s /opt/smartgit/bin/smartgit.sh /usr/local/bin/smartgit
+RUN if [ "$(md5sum smartgit-generic-6_5_7.tar.gz|awk '{print $1}')" = "02b7216dd643d929049a2382905a24f7" ]; then mv smartgit-generic-6_5_7.tar.gz /opt && cd /opt && tar -xpzvf smartgit-generic-6_5_7.tar.gz && ln -s /opt/smartgit/bin/smartgit.sh /usr/local/bin/smartgit ; fi
 
 
-# get & check tomb
-RUN wget https://files.dyne.org/tomb/Tomb-2.0.1.tar.gz
-RUN wget https://files.dyne.org/tomb/Tomb-2.0.1.tar.gz.sha
-RUN sha256sum -c Tomb-2.0.1.tar.gz.sha \
-     && tar -xpzvf Tomb-2.0.1.tar.gz \
-     && cd Tomb-2.0.1 \
-     && make install \
-     && mv /Tomb-2.0.1* /opt
+# eclipse kepler base
 RUN wget http://mirrors.ibiblio.org/pub/mirrors/eclipse/technology/epp/downloads/release/kepler/SR2/eclipse-standard-kepler-SR2-linux-gtk-x86_64.tar.gz
 RUN if [ "$(sha512sum eclipse-standard-kepler-SR2-linux-gtk-x86_64.tar.gz|awk '{print $1}')" = "38d53d51a9d8d2fee70c03a3ca0efd1ca80d090270d41d6f6c7d8e66b118d7e5c393c78ed5c7033a2273e10ba152fa8eaf31832e948e592a295a5b6e7f1de48f" ]; then test -d /opt || mkdir /opt && mv eclipse-standard-kepler-SR2-linux-gtk-x86_64.tar.gz /opt && cd /opt && tar -xpzvf eclipse-standard-kepler-SR2-linux-gtk-x86_64.tar.gz ; fi
+# liclipse update dl
 RUN  wget https://googledrive.com/host/0BwwQN8QrgsRpLVlDeHRNemw3S1E
 
 
@@ -128,6 +134,7 @@ RUN add-apt-repository -y ppa:ubuntu-wine/ppa \
      && apt-get upgrade -y \
      && apt-get install -y  wine1.7 winbind winetricks  
 
+#########################################
 # Set locale (fix the locale warnings)
 RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 
