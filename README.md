@@ -9,6 +9,7 @@ This project provides
  * Automated Builds on Dockerhub:
    - [guruvan/desktop-base](https://registry.hub.docker.com/u/guruvan/desktop-base)
    - [guruvan/desktop-gui](https://registry.hub.docker.com/u/guruvan/desktop-gui)
+     - automated build for gui comes from [guruvan/docker-desktop-gui](https://github.com/guruvan/docker-desktop-gui)
 
 Default Dockerfile builds desktop-base (text) 
    ```

@@ -82,4 +82,5 @@ RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 # Copy the files into the container
 EXPOSE 22 
 # Start xdm and ssh services.
+COPY . /src
 CMD ["/bin/bash", "/src/startup.sh"] 
